@@ -1,8 +1,8 @@
-//add button click event to search weather & forecast for city
+//add button click event to search weather & forecast for city -completed
 //send city to history section
-//render current city weather details
-//render current 5 day forecast
-//uv index - different api to get this
+//render current city weather details - completed
+//render current 5 day forecast - completed
+//uv index - different api to get this - completed
 
 $(document).ready(function () {
   const cities = [];
@@ -10,15 +10,10 @@ $(document).ready(function () {
   const history = $(".history");
   const city = $(".city");
   const forecast = $(".forecasts");
+  let geolocation = {}
 
-  $("button").on("click", async function () {
+  $("button").on("click",  async function () {
     event.preventDefault();
-    const userCity = $("#city-input").val().trim().toLowerCase();
-    renderWeather(userCity)
-    renderForecast(userCity)
-  });
-
-  renderWeather = () => {
     const userCity = $("#city-input").val().trim().toLowerCase();
     const apiKey = "45dc9b511ea376337abf6c099c7c9895";
     const queryURL =
@@ -26,68 +21,86 @@ $(document).ready(function () {
       userCity +
       "&units=imperial&appid=" +
       apiKey;
-    
-
-    $.ajax({
+      
+    const latlng  = await $.ajax({
       url: queryURL,
       method: "GET"
-    }).then(response => {
-      city.empty();
+    }).then(response=>{
       console.log(response)
-      const results = response;
-      console.log(results);
-      const newDiv = $("<div>");
-      const name = $("<p>").text(results.name);
-      newDiv.append(name);
-      const icon = $("<p>").text(results.weather.icon);
-      newDiv.append(icon);
-      const unixTimestamp = (results.dt*1000)
-      const dateObj = new Date(unixTimestamp); 
-        const newDate = dateObj.toLocaleDateString() 
-      const date = $("<p>").text(newDate);
-      newDiv.append(date);
-      const temp = $("<p>").text(results.main.temp);
-      newDiv.append(temp);
-      const humidity = $("<p>").text(results.main.humidity);
-      newDiv.append(humidity);
-      const windspeed = $("<p>").text(results.wind.speed);
-      newDiv.append(windspeed);
-      city.append(newDiv);
-    });
-  };
+      geolocation = response
+    })
 
-  renderForecast = () => {
-    const userCity = $("#city-input").val().trim().toLowerCase();
-    const apiKey2 = "45dc9b511ea376337abf6c099c7c9895";
+ 
+    let lat = geolocation.coord.lat;
+    let lon = geolocation.coord.lon;
+    let name = geolocation.name;
+
     const queryURL2 =
-      "http://api.openweathermap.org/data/2.5/forecast?q=" +
-      userCity +
-      "&units=imperial&appid=" +
-      apiKey2;
+      "https://api.openweathermap.org/data/2.5/onecall?lat=" +
+      lat +
+      "&lon=" +
+      lon +
+      "&exclude=hourly,minutely&units=imperial&&appid=" +
+      apiKey;
 
-    $.ajax({
+    const oneCall = await $.ajax({
       url: queryURL2,
       method: "GET"
     }).then(response => {
+      city.empty();
       forecast.empty();
-      console.log(response)
-      const result = response.list;
-      console.log(result);
-      for (let i = 0; i < result.length; i++) {
-        const forecastDiv = $("<div>");
-        const forecastDate = (result[i].dt_txt)
-        const dateObj = new Date(forecastDate); 
-          const newDate = dateObj.toLocaleDateString() 
-        const dt = $("<p>").text(newDate);
+      console.log(response);
+      const weather = response.current;
+      console.log(weather)
+      const forecasts = response.daily;
+      console.log(forecasts)
+      const newDiv = $("<div>");
+      const cityName = $("<h2>").text(name);
+      newDiv.append(cityName);
+      const unixTimestamp = weather.dt * 1000;
+      const dateObj = new Date(unixTimestamp);
+      const newDate = dateObj.toLocaleDateString();
+      const date = $("<p>").text(`(${newDate})`);
+      newDiv.append(date);
+      const icon = weather.weather[0].icon;
+      const img = $("<img>").attr(
+        "src",
+        `http://openweathermap.org/img/wn/${icon}@2x.png`
+      );
+      newDiv.append(img);
+      const temp = $("<p>").text(`Temperature: ${weather.temp}°F`);
+      newDiv.append(temp);
+      const humidity = $("<p>").text(`Humidity: ${weather.humidity}%`);
+      newDiv.append(humidity);
+      const windspeed = $("<p>").text(`Wind Speed: ${weather.wind_speed} MPH`);
+      newDiv.append(windspeed);
+      const uvindex = $("<p>").text(`UV Index: ${weather.uvi}`);
+      newDiv.append(uvindex);
+      city.append(newDiv);
+      const forecastTitle = $("<h2>").text("5-Day Forecast")
+      forecast.append(forecastTitle)
+
+      for (let i = 1; i <=5; i++) {
+        const forecastDiv = $("<div>")
+        const forecastDate = forecasts[i].dt*1000;
+        const dateObj = new Date(forecastDate);
+        const newDate = dateObj.toLocaleDateString();
+        const dt = $("<h3>").text(newDate);
         forecastDiv.append(dt);
-        const icon2 = $("<p>").text(result[i].weather.icon);
-        forecastDiv.append(icon2);
-        const temperature = $("<p>").text(result[i].main.temp);
-        forecastDiv.append(temperature);
-        const humid = $("<p>").text(result[i].main.humidity);
+        const icons = weather.weather[0].icon;
+        const images = $("<img>").attr(
+          "src",
+          `http://openweathermap.org/img/wn/${icons}@2x.png`
+        );
+        forecastDiv.append(images);
+        const max = $("<p>").text(`High: ${forecasts[i].temp.max}°F`);
+        forecastDiv.append(max);
+        const min = $("<p>").text(`Low: ${forecasts[i].temp.min}°F`);
+        forecastDiv.append(min);
+        const humid = $("<p>").text(`Humidity: ${forecasts[i].humidity}`);
         forecastDiv.append(humid);
         forecast.append(forecastDiv);
       }
     });
-  };
+  });
 });
