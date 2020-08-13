@@ -1,0 +1,28 @@
+.navbar-brand {
+  font-size: 50px;
+  text-align: center;
+}
+#search-label{
+    font-size:25px
+}
+
+#search-form {
+  padding-top: 30px;
+  padding-right: 50px;
+  padding-bottom: 10px;
+  padding-left:20px;
+}
+
+.details {
+  padding-top: 20px;
+  padding-right: 50px;
+  padding-bottom: 10px;
+  padding-left: 50px;
+  border: 1px solid gray;
+}
+.card-deck {
+  padding-top: 20px;
+  padding-right: 50px;
+  padding-bottom: 50px;
+  padding-left: 50px;
+}
