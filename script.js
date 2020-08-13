@@ -1,18 +1,12 @@
-//add button click event to search weather & forecast for city -completed
-//send city to history section
-//render current city weather details - completed
-//render current 5 day forecast - completed
-//uv index - different api to get this - completed
-
 $(document).ready(function () {
   const cities = [];
   const searchBtn = $("#btn");
   const history = $(".history");
   const city = $(".city");
   const forecast = $(".forecasts");
-  let geolocation = {}
+  let geolocation = {};
 
-  $("button").on("click",  async function () {
+  $("button").on("click", async function () {
     event.preventDefault();
     const userCity = $("#city-input").val().trim().toLowerCase();
     const apiKey = "45dc9b511ea376337abf6c099c7c9895";
@@ -21,16 +15,15 @@ $(document).ready(function () {
       userCity +
       "&units=imperial&appid=" +
       apiKey;
-      
-    const latlng  = await $.ajax({
+
+    const latlng = await $.ajax({
       url: queryURL,
       method: "GET"
-    }).then(response=>{
-      console.log(response)
-      geolocation = response
-    })
+    }).then(response => {
+      console.log(response);
+      geolocation = response;
+    });
 
- 
     let lat = geolocation.coord.lat;
     let lon = geolocation.coord.lon;
     let name = geolocation.name;
@@ -51,10 +44,12 @@ $(document).ready(function () {
       forecast.empty();
       console.log(response);
       const weather = response.current;
-      console.log(weather)
+      console.log(weather);
       const forecasts = response.daily;
-      console.log(forecasts)
-      const newDiv = $("<div>");
+      console.log(forecasts);
+      const newRow = $("<div>").addClass("row")
+      const newDiv = $("<div>").addClass("details col")
+      newRow.append(newDiv)
       const cityName = $("<h2>").text(name);
       newDiv.append(cityName);
       const unixTimestamp = weather.dt * 1000;
@@ -76,30 +71,42 @@ $(document).ready(function () {
       newDiv.append(windspeed);
       const uvindex = $("<p>").text(`UV Index: ${weather.uvi}`);
       newDiv.append(uvindex);
-      city.append(newDiv);
-      const forecastTitle = $("<h2>").text("5-Day Forecast")
-      forecast.append(forecastTitle)
+      city.append(newRow);
+      const forecastTitle = $("<h2>").text("5-Day Forecast");
+      forecast.append(forecastTitle);
+      const cardRow = $("<div>").addClass("card-deck")
+      forecast.append(cardRow);
 
-      for (let i = 1; i <=5; i++) {
+      for (let i = 1; i <= 5; i++) {
         const forecastDiv = $("<div>")
-        const forecastDate = forecasts[i].dt*1000;
+          .addClass("card text-white bg-primary col")
+          .attr("style", "width: 12rem;");
+        const cardBody = $("<div>").addClass("card-body");
+        forecastDiv.append(cardBody);
+        const forecastDate = forecasts[i].dt * 1000;
         const dateObj = new Date(forecastDate);
         const newDate = dateObj.toLocaleDateString();
-        const dt = $("<h3>").text(newDate);
+        const dt = $("<h5>").text(newDate).addClass("card-title");
         forecastDiv.append(dt);
         const icons = weather.weather[0].icon;
         const images = $("<img>").attr(
           "src",
           `http://openweathermap.org/img/wn/${icons}@2x.png`
-        );
+        ).attr("style","width:6rem")
         forecastDiv.append(images);
-        const max = $("<p>").text(`High: ${forecasts[i].temp.max}°F`);
+        const max = $("<p>")
+          .text(`High: ${forecasts[i].temp.max}°F`)
+          .addClass("card-text");
         forecastDiv.append(max);
-        const min = $("<p>").text(`Low: ${forecasts[i].temp.min}°F`);
+        const min = $("<p>")
+          .text(`Low: ${forecasts[i].temp.min}°F`)
+          .addClass("card-text");
         forecastDiv.append(min);
-        const humid = $("<p>").text(`Humidity: ${forecasts[i].humidity}`);
+        const humid = $("<p>")
+          .text(`Humidity: ${forecasts[i].humidity}`)
+          .addClass("card-text");
         forecastDiv.append(humid);
-        forecast.append(forecastDiv);
+        cardRow.append(forecastDiv);
       }
     });
   });
