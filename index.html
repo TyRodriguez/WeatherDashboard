@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Weather Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container"></div>
+    <h1>Weather Dashboard</h1>
+
+    <form id="search-form">
+        <label for="city-input">Search for a City:</label>
+        <input type="text" id="city-input">
+        <br>
+        <button type="submit" class="btn btn-primary mb-2">Search</button>
+    </form>
+
+    <div class="history"></div>
+    <div class="city"></div>
+    <div class="forecasts"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
